@@ -31,24 +31,39 @@
 | Backtracking pruning | 5/5 | Very strong | Reject invalid states early |
 | DP recursion | 5/5 | Strong | State + choices + recurrence |
 | DP memoization | 4/5 | Strong | Correct state + cache |
-| DP tabulation | 2/5 | **Main weakness** | Dependency ordering / top-down → bottom-up |
+| DP tabulation | 3/5 | **Developing — primary focus** | Dependency ordering / top-down → bottom-up |
 | DP space optimization | 3/5 | Developing | Keep only required previous states |
-| Advanced DP | Not rated | Not started | LIS, LCS, knapsack, edit distance, etc. |
+| Advanced DP | Not rated | Developing | LIS, LCS, knapsack, edit distance, etc. |
 
 ---
 
-## 2. Highest-Priority Focus
+## 2. CURRENT POSITION — LAST SOLVED PROBLEM
+
+> **LAST SOLVED: Coin Change II — LeetCode 518**
+>
+> **Status:** Solved successfully in Java using both top-down memoization and bottom-up tabulation.
+>
+> **Most important learning:** Converted the user's own recursive recurrence into a 2D bottom-up DP by analyzing dependency direction.
+>
+> **Top-down state:** `helper(amount, idx)` = number of ways to make `amount` using coins from `idx` onward.
+>
+> **Recurrence:** `helper(amount, idx) = helper(amount - coins[idx], idx) + helper(amount, idx + 1)`
+>
+> **Tabulation dependencies:** `dp[amount - coin][idx]` → smaller amount; `dp[amount][idx + 1]` → larger index.
+>
+> **Fill direction:** `amount: 0 → target`, `idx: coins.length - 1 → 0`.
+>
+> **Implementation correction:** In top-down, check `amount < 0` / `idx >= coins.length` before accessing `dp[amount][idx]`. In tabulation, initialize the full `amount == 0` row, including `dp[0][coins.length] = 1`.
+>
+> **Resume rule:** When continuing in another session, start AFTER Coin Change II. Do not repeat it unless revision is requested.
+
+---
+
+## 3. Highest-Priority Focus
 
 ### Main weakness: Top-down DP → Bottom-up DP
 
-The user can usually derive:
-1. Recursive state
-2. Meaning of `helper(state)`
-3. Choices
-4. Recurrence
-5. Memoization
-
-The difficult step is converting that memoized solution into tabulation.
+The user can usually derive recursive state, helper meaning, choices, recurrence, and memoization. The difficult step is converting that memoized solution into tabulation.
 
 ### Required thought process
 
@@ -59,7 +74,7 @@ The difficult step is converting that memoized solution into tabulation.
 5. Therefore, in which direction should the table be filled?
 6. Can only a few previous states be retained?
 
-### Examples already learned
+### Dependency-direction examples
 
 **Coin Change**
 ```text
@@ -75,11 +90,24 @@ helper(i) depends on helper(i + 1), helper(i + 2)
 → fill n-1 → 0
 ```
 
+**Coin Change II**
+```text
+helper(amount, idx)
+depends on helper(amount - coin[idx], idx)
+             and helper(amount, idx + 1)
+
+→ amount dependency is smaller
+→ fill amount 0 → target
+
+→ idx dependency is larger
+→ fill idx right → left
+```
+
 This dependency-direction rule should be reinforced repeatedly.
 
 ---
 
-## 3. Detailed Topic Progress
+## 4. Detailed Topic Progress
 
 ## Sliding Window — 4/5
 Core pattern: maintain a window `[left, right]`, expand right, shrink left when constraints fail, and maintain only the required state. Good understanding; maintain through mixed problems.
@@ -108,7 +136,7 @@ One of the strongest areas. Core framework: maintain increasing/decreasing order
 - Sum of Subarray Minimums — smaller boundaries and contribution counting: `leftCount * rightCount * arr[i]`.
 
 ## Greedy / Intervals — 4/5
-Solved Erase Overlap Intervals. Final pattern: sort by end time and keep the earliest-finishing compatible interval. User initially tried merging/list tracking, then recognized the greedy reduction.
+Solved Erase Overlap Intervals. Final pattern: sort by end time and keep the earliest-finishing compatible interval.
 
 ## Trees / DFS — 5/5
 One of the strongest areas. Core mental model: ask what information the parent needs from each subtree.
@@ -179,7 +207,7 @@ Undo
 6. What must be undone after recursion?
 
 ## Dynamic Programming — 3/5 overall, developing
-Strong top-down reasoning; main weakness is tabulation conversion.
+Strong top-down reasoning; tabulation is improving but remains the main area for deliberate practice.
 
 ### DP workflow
 ```text
@@ -203,7 +231,7 @@ Problem
 ### Solved: House Robber II — 5/5
 Circular houses reduced to two linear cases: `0..n-2` and `1..n-1`; take the maximum. Reused House Robber logic.
 
-### Solved: Coin Change — recurrence/memoization strong; tabulation needs practice
+### Solved: Coin Change — 5/5
 Top-down recurrence:
 ```text
 helper(amount) = min over coins (1 + helper(amount - coin))
@@ -218,11 +246,42 @@ for amount = 1..target:
         if amount >= coin:
             dp[amount] = min(dp[amount], 1 + dp[amount-coin])
 ```
-The user needed Google help for this top-down → bottom-up conversion, so dependency ordering remains the primary DP focus.
+
+### Solved: Coin Change II — 4/5
+**LeetCode:** 518
+
+Top-down:
+```text
+helper(amount, idx)
+= number of combinations to make amount using coins from idx onward
+```
+
+Choices:
+```text
+take → helper(amount - coins[idx], idx)
+skip → helper(amount, idx + 1)
+```
+
+Bottom-up:
+```text
+dp[amount][idx]
+= dp[amount - coins[idx]][idx]
++ dp[amount][idx + 1]
+```
+
+Dependency directions:
+- Smaller amount → `amount` from `0 → target`.
+- Larger index → `idx` from `coins.length - 1 → 0`.
+
+Base cases:
+- `dp[0][idx] = 1` for every `idx`, including `idx == coins.length`.
+- `dp[positiveAmount][coins.length] = 0`.
+
+The user independently implemented the final 2D tabulation correctly after deriving the dependency directions. This was an important successful exercise for the primary weakness.
 
 ---
 
-## 4. Solved Problem Index
+## 5. Solved Problem Index
 
 ### Arrays / Search
 - Sliding Window problems
@@ -274,10 +333,11 @@ The user needed Google help for this top-down → bottom-up conversion, so depen
 - House Robber
 - House Robber II
 - Coin Change
+- **Coin Change II (LeetCode 518) — LAST SOLVED**
 
 ---
 
-## 5. What Another AI Agent Should Know
+## 6. What Another AI Agent Should Know
 
 ### Teaching style
 - User prefers deriving solutions rather than receiving code immediately.
@@ -291,10 +351,12 @@ The user needed Google help for this top-down → bottom-up conversion, so depen
 - Trees, backtracking, and monotonic stack are strong; avoid spending excessive time on basic versions.
 - Graph problems are temporarily paused while graph concepts are studied.
 - DP should receive increased attention, especially top-down → bottom-up conversion.
+- **Resume from AFTER Coin Change II.**
+- Do not restart DP from Climbing Stairs or repeat Coin Change / Coin Change II unless revision is requested.
 
 ---
 
-## 6. Progress Update Template
+## 7. Progress Update Template
 
 Whenever a new problem is solved, update this tracker with:
 ```text
@@ -316,16 +378,15 @@ Then update topic ratings only when there is enough evidence from multiple probl
 
 ---
 
-## 7. Current Priority Queue
+## 8. Current Priority Queue
 
 ### Priority 1 — DP Tabulation
-Practice dependency analysis and conversion from memoization.
+Continue practicing dependency analysis and conversion from memoization.
 
 ### Priority 2 — Advanced DP
-After tabulation improves:
-- Min Cost Climbing Stairs
-- Coin Change II
+Next suitable problems after Coin Change II:
 - Partition Equal Subset Sum
+- Min Cost Climbing Stairs
 - Longest Increasing Subsequence
 - Longest Common Subsequence
 - 0/1 Knapsack
@@ -350,7 +411,7 @@ Resume graph problem practice after fundamentals are studied:
 
 ---
 
-## 8. Overall Interview Readiness Snapshot
+## 9. Overall Interview Readiness Snapshot
 
 ```text
 Recursion / Tree Thinking       █████  5/5
@@ -363,11 +424,13 @@ Greedy                          ████░  4/5
 Graph Fundamentals              ████░  4/5
 DP Recursion                    █████  5/5
 DP Memoization                  ████░  4/5
-DP Tabulation                   ██░░░  2/5  ← PRIMARY FOCUS
+DP Tabulation                   ███░░  3/5  ← PRIMARY FOCUS
 DP Space Optimization           ███░░  3/5
-Advanced DP                     ░░░░░  Not started
+Advanced DP                     ░░░░░  Developing
 Advanced Graph                  ░░░░░  Not started
 ```
 
 **Last updated:** 2026-08-16
 **Current learning focus:** Dynamic Programming — especially Top-Down → Bottom-Up conversion.
+**Last solved problem:** Coin Change II (LeetCode 518).
+**Resume point:** Next DP problem after Coin Change II.
