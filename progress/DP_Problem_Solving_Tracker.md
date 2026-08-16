@@ -1,383 +1,248 @@
 # Dynamic Programming — Problem Solving & Pattern Tracker
 
-**Purpose:** Detailed, interview-oriented DP tracker. This file records not only solved questions, but the reasoning process used to identify the DP pattern, derive the recurrence, convert top-down to bottom-up, and capture special cases.
+**Purpose:** Detailed interview tracker. Every DP problem follows: **Question → Pattern Identification → Logic Discussion → Implementation → Review → Top-down→Bottom-up → Space Optimization → Pattern Note → Rating → Git update.**
 
-## Mandatory learning flow for every future DP problem
-
-1. **Question** — read and restate the problem.
-2. **Pattern identification** — before coding, identify which DP concept/pattern applies.
-3. **Logic discussion** — define the state, meaning of `helper(state)`, choices, recurrence, base cases, and dependencies.
-4. **Implementation** — write the solution in Java.
-5. **Review** — correctness, edge cases, complexity, mistakes, and cleaner alternatives.
-6. **DP conversion** — if top-down is used, explicitly derive bottom-up from dependencies instead of looking up the implementation.
-7. **Space optimization** — determine whether the full table is required.
-8. **Pattern note** — record the reusable pattern in plain language.
-9. **Rating** — rate the problem/pattern and update the overall skill only when enough evidence exists.
-10. **Git update** — append the solved problem and update priorities.
-
----
-
-# Current DP Skill Snapshot
-
+## Current Skill Snapshot
 | Skill | Rating | Notes |
 |---|---:|---|
-| Recognize DP opportunity | 4/5 | Good after recursion practice |
-| Define recursive state | 5/5 | Strong |
-| Define recurrence | 5/5 | Strong |
+| Recognize DP | 4/5 | Good |
+| Recursive state | 5/5 | Strong |
+| Recurrence | 5/5 | Strong |
 | Memoization | 4/5 | Good; watch sentinel/state design |
 | Top-down reasoning | 5/5 | Strong |
-| Top-down → bottom-up | **2/5** | **Primary weakness** |
-| Dependency analysis | 2/5 | Needs deliberate practice |
-| Tabulation direction | 2/5 | Need to derive rather than memorize |
-| Space optimization | 3/5 | Improving |
-| Advanced DP patterns | Not started | Future focus |
+| Top-down → bottom-up | **3/5** | Improving after Min Cost Climbing Stairs |
+| Dependency analysis | **3/5** | Smaller/larger dependency recognition improving |
+| Tabulation direction | **3/5** | Successfully derived right-to-left for latest problem |
+| Space optimization | 3/5 | Developing |
+| Advanced DP | Not started | Future |
 
----
-
-# Master DP Recognition Framework
-
-When a problem looks like DP, ask:
-
-### 1. Is there a state?
-What smaller subproblem completely describes what remains?
-
-### 2. What does `helper(state)` return?
-Examples:
-- maximum value
-- minimum cost/count
-- number of ways
-- boolean possible/impossible
-
-### 3. What choices exist at this state?
-Examples:
-- take / skip
-- choose a coin
-- move right / down
-- match / skip
-- pick an item / don't pick it
-
-### 4. How are choices combined?
-- `max(...)`
-- `min(...)`
-- `sum(...)`
-- `||` / `&&`
-
-### 5. What are the base cases?
-
-### 6. Are the same states repeated?
-If yes, memoization/DP is useful.
-
----
-
-# Top-Down → Bottom-Up Conversion Rule
-
-Do **not** start by guessing loop direction.
-
-First write:
-
-```text
-What does dp[state] mean?
-
-What states does dp[state] depend on?
-
-Which states must exist before current state?
-
-Therefore, in what order must states be calculated?
-```
-
-### Example: Coin Change
-
-```text
-helper(amount)
-→ depends on helper(amount - coin)
-→ dependencies are smaller amounts
-→ calculate 0, 1, 2, ..., target
-```
-
-### Example: House Robber
-
-```text
-helper(i)
-→ depends on helper(i+1), helper(i+2)
-→ dependencies are larger indices
-→ calculate n-1, n-2, ..., 0
-```
+## Master Recognition Framework
+1. What is the state?
+2. What does `helper(state)` return?
+3. What choices exist?
+4. How are choices combined: `min`, `max`, count, boolean?
+5. What are the base cases?
+6. Are states repeated?
+7. What states does the current state depend on?
+8. Which order makes dependencies available first?
 
 ### Golden rule
 > **Dependency direction determines tabulation direction.**
 
+Examples:
+```text
+Coin Change: helper(amount) → helper(amount-coin) → smaller → 0→target
+House Robber: helper(i) → helper(i+1), helper(i+2) → larger → n-1→0
+Min Cost Climbing Stairs: helper(i) → helper(i+1), helper(i+2) → larger → n-1→0
+```
+
 ---
 
-# Solved Problem 1 — Climbing Stairs
+# Solved Problems
 
-**LeetCode:** 70. Climbing Stairs
-
-### 1. Question
-You can climb 1 or 2 steps. Find the number of distinct ways to reach step `n`.
-
-### 2. Pattern identification
-**DP pattern:** Fibonacci / 1D DP with two previous states.
-
-### 3. Logic discussion
-State:
+## 1. Climbing Stairs — LeetCode 70
+### Question
+Climb 1 or 2 steps; count distinct ways to reach `n`.
+### Pattern
+**Fibonacci / 1D DP / two previous states.**
+### Logic
+`helper(n)` = number of ways to reach `n`.
 ```text
-helper(n) = number of ways to reach n
+f(n)=f(n-1)+f(n-2)
+f(1)=1, f(2)=2
 ```
-Choices:
-```text
-arrive from n-1
-arrive from n-2
-```
-Recurrence:
-```text
-f(n) = f(n-1) + f(n-2)
-```
-Base:
-```text
-f(1) = 1
-f(2) = 2
-```
-
-### 4. Implementation learned
-- Recursive + memoization
-- Iterative bottom-up
-- O(1) space optimization
-
+### Implementation
+Solved recursive/memoized and iterative O(1) space.
 ### Special insight
-The state depends only on the previous two states, so the full DP table is unnecessary.
-
+Only previous two states are required.
 ### Rating
 **5/5**
 
 ---
 
-# Solved Problem 2 — House Robber
+## 2. House Robber — LeetCode 198
+### Question
+Maximize robbed money without taking adjacent houses.
+### Pattern
+**1D Take/Skip DP.**
+### Logic
+`helper(i)` = maximum money from `i` onward.
+```text
+take = nums[i] + helper(i+2)
+skip = helper(i+1)
+f(i)=max(take,skip)
+```
+Base: `i >= n → 0`.
+### Implementation
+Recursive → memoized `dp[i]` → bottom-up right-to-left → O(1) space.
+### Important correction
+`dp[nums[idx]][idx]` was wrong. The subproblem is determined by `idx`, not by `nums[idx]`.
+### Rating
+**5/5**
 
-**LeetCode:** 198. House Robber
+---
 
+## 3. House Robber II — LeetCode 213
+### Question
+Houses are circular; first and last are adjacent.
+### Pattern
+**Circular DP reduction.**
+### Logic
+```text
+case 1: 0..n-2
+case 2: 1..n-1
+answer = max(case1, case2)
+```
+### Implementation
+Reused O(1) House Robber helper over `[left,right]`.
+### Special case
+One house → `nums[0]`.
+### Rating
+**5/5**
+
+---
+
+## 4. Coin Change — LeetCode 322
+### Question
+Minimum number of coins to make amount; `-1` if impossible.
+### Pattern
+**1D minimum DP / unbounded choice.**
+### Logic
+`helper(amount)` = minimum coins needed.
+```text
+for each coin c:
+    candidate = 1 + helper(amount-c)
+f(amount) = min(candidate)
+```
+Base: `amount=0 → 0`; negative → impossible.
+### Implementation progression
+Brute-force recursion → top-down `dp[amount]` → bottom-up.
+### Special/mistake
+Do not use the same sentinel for “not computed” and “impossible”. Example `-2 = not computed`, `-1 = impossible`.
+### Tabulation insight
+`helper(amount)` depends on smaller amounts, so calculate `0→target`.
+### Rating
+Recursion **5/5**, state/recurrence **5/5**, memoization **4/5**, tabulation conversion initially **2/5**.
+### Learning note
+User needed Google help for this top-down→bottom-up conversion. This remains a key training target.
+
+---
+
+## 5. Min Cost Climbing Stairs — LeetCode 746
 ### 1. Question
-Rob houses to maximize money, but adjacent houses cannot both be robbed.
+Given `cost[i]`, start at stair 0 or 1, move 1 or 2 steps, and reach the top with minimum cost.
 
 ### 2. Pattern identification
-**DP pattern:** 1D take/skip DP.
+User correctly identified: **choice + minimum / 1D minimum-cost DP**.
 
 ### 3. Logic discussion
 State:
 ```text
-helper(i) = maximum money from house i onward
+helper(i) = minimum cost to reach the top starting from stair i
 ```
 Choices:
 ```text
-Take house i → nums[i] + helper(i+2)
-Skip house i → helper(i+1)
+1 step → helper(i+1)
+2 steps → helper(i+2)
 ```
 Recurrence:
 ```text
-f(i) = max(nums[i] + f(i+2), f(i+1))
+helper(i) = cost[i] + min(helper(i+1), helper(i+2))
 ```
 Base:
 ```text
 i >= n → 0
 ```
-
-### 4. Implementation progression
-- Recursive
-- Memoized with `dp[i]`
-- Bottom-up right-to-left
-- O(1) space
-
-### Important correction
-An earlier attempt used `dp[nums[idx]][idx]`. This was wrong because the subproblem depends on `idx`, not on the value stored at `nums[idx]`.
-
-### Bottom-up insight
-`dp[i]` depends on `dp[i+1]` and `dp[i+2]`, so fill from right to left.
-
-### Rating
-**5/5**
-
----
-
-# Solved Problem 3 — House Robber II
-
-**LeetCode:** 213. House Robber II
-
-### 1. Question
-Houses are arranged in a circle, so the first and last houses are adjacent.
-
-### 2. Pattern identification
-**DP pattern:** Reduce circular DP to two linear House Robber problems.
-
-### 3. Logic discussion
-Because first and last cannot both be selected, every valid solution belongs to one of two cases:
+Because starting stair can be 0 or 1:
 ```text
-Case 1: houses 0 .. n-2
-Case 2: houses 1 .. n-1
-```
-Answer:
-```text
-max(case1, case2)
+answer = min(helper(0), helper(1))
 ```
 
 ### 4. Implementation
-Reuse the O(1) House Robber helper over `[left, right]`.
+User independently wrote both top-down memoization and bottom-up tabulation:
+```text
+dp[n]=0
+dp[n+1]=0
+for i=n-1..0:
+    dp[i] = cost[i] + min(dp[i+1],dp[i+2])
+answer=min(dp[0],dp[1])
+```
 
-### Special case
-If there is exactly one house, return `nums[0]`.
+### 5. Top-down → Bottom-up
+Dependencies are `i+1` and `i+2` (larger indices), therefore fill **right to left**. This is the exact dependency reasoning we are trying to build.
 
-### Rating
-**5/5**
+### 6. Special cases
+- Starting point is either 0 or 1.
+- `n+2` DP array makes `dp[n]` and `dp[n+1]` naturally zero.
+
+### 7. Complexity
+Top-down: `O(n)` time, `O(n)` memo + recursion stack.
+Bottom-up: `O(n)` time, `O(n)` DP space.
+Can be reduced to `O(1)` because only two future states are needed.
+
+### 8. Pattern to remember
+**1D min DP:** pay current cost + choose the cheaper future state.
+
+### 9. Rating
+**4/5 for this pattern.** Pattern identification, recurrence, memoization, and tabulation were independently correct. Space optimization remains practice.
 
 ---
 
-# Solved Problem 4 — Coin Change
-
-**LeetCode:** 322. Coin Change
-
-### 1. Question
-Given coin denominations and an amount, return the minimum number of coins needed to make that amount; return `-1` if impossible.
-
-### 2. Pattern identification
-**DP pattern:** 1D minimum DP / unbounded choice.
-
-### 3. Logic discussion
-State:
-```text
-helper(amount) = minimum coins needed to make amount
-```
-Choices:
-```text
-Choose any coin c
-→ 1 + helper(amount - c)
-```
-Recurrence:
-```text
-f(amount) = min over all valid coins [1 + f(amount - coin)]
-```
-Base:
-```text
-amount == 0 → 0
-amount < 0 → impossible
-```
-
-### 4. Implementation progression
-- First brute-force recursion with a global minimum path count.
-- Then top-down memoization with `dp[amount]`.
-- Then bottom-up tabulation.
-
-### Important correction
-Using `-1` for both "not computed" and "impossible" makes memoization ambiguous. Better:
-```text
--2 = not computed
--1 = impossible
-0+ = valid answer
-```
-Or use a large sentinel for impossible values in bottom-up DP.
-
-### Bottom-up conversion
-The top-down state:
-```text
-helper(amount) → helper(amount - coin)
-```
-depends only on smaller amounts. Therefore calculate:
-```text
-0 → target amount
-```
-
-### Bottom-up recurrence
-```text
-dp[0] = 0
-for amt = 1..target:
-    for coin in coins:
-        if amt >= coin:
-            dp[amt] = min(dp[amt], 1 + dp[amt-coin])
-```
-
-### Main learning gap
-The user needed Google help to derive the bottom-up version. This is the current primary DP training target.
-
-### Rating
-- Recursion: 5/5
-- State/recurrence: 5/5
-- Memoization: 4/5
-- Tabulation conversion: 2/5
-
----
-
-# DP Problems To Solve Next
-
-For each problem below, use the mandatory 10-step learning flow.
-
-1. **Min Cost Climbing Stairs** — 1D min DP
-2. **Coin Change II** — counting combinations / order matters distinction
-3. **Unique Paths** — 2D DP
-4. **Minimum Path Sum** — 2D min DP
-5. **Partition Equal Subset Sum** — 0/1 knapsack / boolean DP
-6. **Longest Increasing Subsequence** — sequence DP
-7. **0/1 Knapsack** — take/skip with capacity state
-8. **Longest Common Subsequence** — 2D string DP
-9. **Edit Distance** — 2D string transformation DP
-
----
-
-# Future Pattern Catalog
-
-| Pattern | Example problems | Status |
+# Future DP Pattern Roadmap
+| Pattern | Problems | Status |
 |---|---|---|
 | Fibonacci / 1D | Climbing Stairs | Learned |
 | Take / Skip | House Robber | Learned |
 | Circular reduction | House Robber II | Learned |
 | Min over choices | Coin Change | Learned |
+| 1D min-cost choice | Min Cost Climbing Stairs | **Learned** |
+| Unbounded counting | Coin Change II | Next |
 | 2D grid DP | Unique Paths, Minimum Path Sum | Next |
 | 0/1 Knapsack | Partition Equal Subset Sum | Next |
-| Unbounded Knapsack | Coin Change II | Next |
 | Sequence DP | LIS | Next |
 | String DP | LCS, Edit Distance | Later |
-| Advanced DP | Partition DP, interval DP, tree DP | Later |
+| Advanced DP | Interval/partition/tree DP | Later |
 
----
+# Next Problems
+1. Coin Change II
+2. Unique Paths
+3. Minimum Path Sum
+4. Partition Equal Subset Sum
+5. Longest Increasing Subsequence
+6. 0/1 Knapsack
+7. Longest Common Subsequence
+8. Edit Distance
 
-# Per-Problem Record Template
-
-Copy this for every new problem:
-
+# Per-Problem Template
 ```text
 ## Problem
-
 ### 1. Question
-
 ### 2. Pattern identification
-- Which DP concept applies?
+- Which DP concept?
 - Why?
-
 ### 3. Logic discussion
-- State:
-- Meaning of helper(state):
-- Choices:
-- Recurrence:
-- Base cases:
-- Special cases:
-- Dependencies:
-
+- State
+- Meaning of helper(state)
+- Choices
+- Recurrence
+- Base cases
+- Special cases
+- Dependencies
 ### 4. Implementation
-- Java approach:
-- Time:
-- Space:
-
+- Java
+- Time
+- Space
 ### 5. Top-down → Bottom-up
-- Dependencies:
-- Required order:
-- Tabulation:
-- Space optimization:
-
+- Dependencies
+- Required order
+- Tabulation
+- Space optimization
 ### 6. Mistakes / corrections
-
 ### 7. Key interview insight
-
 ### 8. Pattern to remember
-
 ### 9. Rating
-
 ### 10. Revision needed
 ```
 
 **Last updated:** 2026-08-16
+**Current focus:** Make top-down → bottom-up conversion automatic through dependency analysis.
