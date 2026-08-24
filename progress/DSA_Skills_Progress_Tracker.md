@@ -5,28 +5,25 @@
 
 ## CURRENT POSITION — LAST SOLVED PROBLEM
 
-> **LAST SOLVED: Partition Equal Subset Sum — LeetCode 416**
+> **LAST SOLVED: Longest Common Subsequence — LeetCode 1143**
 >
-> **Status:** Solved successfully in Java using both top-down memoization and bottom-up tabulation.
+> **Status:** Solved successfully in Java using recursion, memoization, and bottom-up tabulation.
 >
-> **Important learning:** The user independently converted the recursive solution into bottom-up DP by identifying dependency directions.
+> **Important learning:** The user independently converted the recursive LCS recurrence into bottom-up DP by analyzing dependencies.
 >
-> **Top-down state:** `helper(nums, target, idx)` = whether `target` can be formed using elements from `idx` onward.
+> **Top-down state:** `helper(text1, text2, n, m)` = LCS length using prefixes ending at indices `n` and `m`.
 >
 > **Recurrence:**
-> `helper(target, idx) = helper(target - nums[idx], idx + 1) || helper(target, idx + 1)`
+> - If characters match: `1 + helper(n-1, m-1)`.
+> - Otherwise: `max(helper(n-1, m), helper(n, m-1))`.
 >
-> **Bottom-up dependencies:**
-> - `dp[target - nums[idx]][idx + 1]` → smaller target.
-> - `dp[target][idx + 1]` → larger index.
+> **Bottom-up dependencies:** `dp[i-1][j-1]`, `dp[i-1][j]`, and `dp[i][j-1]`.
 >
-> **Fill direction:** target from `0 → sum/2`, index from `n-1 → 0`.
+> **Fill direction:** `i: 1 → n`, `j: 1 → m` because every dependency is in an earlier row or earlier column.
 >
-> **Key result:** User correctly recognized the same dependency pattern as Coin Change II without being given the tabulation solution.
+> **Key result:** User correctly derived and implemented the 2D tabulation without being given the solution.
 >
-> **Minor optimization:** The bottom-up loop can start target at `1` because the `target == 0` row is already initialized; current implementation remains correct.
->
-> **Resume rule:** Continue AFTER Partition Equal Subset Sum. Do not repeat it unless revision is requested.
+> **Resume rule:** Continue AFTER LCS. Do not repeat LCS unless revision is requested.
 
 ---
 
@@ -105,7 +102,14 @@ depends on helper(target - nums[idx], idx + 1)
 → idx right → left
 ```
 
-The user has now successfully applied dependency-direction reasoning across two consecutive 2D DP problems.
+**LCS**
+```text
+helper(n, m)
+depends on helper(n-1, m-1), helper(n-1, m), helper(n, m-1)
+→ fill rows/columns from smaller indices toward larger indices
+```
+
+The user has now successfully applied dependency-direction reasoning across multiple different 2D DP structures.
 
 ## 3. Dynamic Programming Progress
 
@@ -145,16 +149,10 @@ dp[amount][idx]
 
 Fill: amount `0 → target`, idx `n-1 → 0`.
 
-### Solved: Partition Equal Subset Sum — 5/5 for this problem
+### Solved: Partition Equal Subset Sum — 5/5
 **LeetCode:** 416
 
-First observation:
-```text
-if totalSum is odd → false
-else target = totalSum / 2
-```
-
-Top-down state:
+State:
 ```text
 helper(nums, target, idx)
 = whether target can be formed using nums[idx...]
@@ -166,37 +164,60 @@ take → helper(target - nums[idx], idx + 1)
 skip → helper(target, idx + 1)
 ```
 
-Base cases:
+Bottom-up fill: target `0 → sum/2`, idx `n-1 → 0`.
+
+The user independently produced the correct bottom-up implementation.
+
+### Solved: Longest Common Subsequence — 5/5 for this problem
+**LeetCode:** 1143
+
+Top-down state:
 ```text
-target == 0 → true
-idx == n or target < 0 → false
+helper(text1, text2, n, m)
+= LCS length for prefixes ending at n and m
+```
+
+Recurrence:
+```text
+if text1[n] == text2[m]:
+    1 + helper(n-1, m-1)
+else:
+    max(helper(n-1, m), helper(n, m-1))
+```
+
+Base case:
+```text
+n < 0 || m < 0 → 0
 ```
 
 Bottom-up state:
 ```text
-dp[target][idx]
-= whether target can be formed using nums[idx...]
+dp[i][j]
+= LCS length of first i chars of text1 and first j chars of text2
 ```
 
-Dependencies:
+Transitions:
 ```text
-dp[target - nums[idx]][idx + 1]
-dp[target][idx + 1]
+match    → 1 + dp[i-1][j-1]
+mismatch → max(dp[i-1][j], dp[i][j-1])
 ```
 
-Fill direction:
+Dependency direction:
 ```text
-target: 0 → sum/2
-idx:    n-1 → 0
+i: 1 → n
+j: 1 → m
 ```
 
 Complexity:
 ```text
-Time:  O(n * target)
-Space: O(n * target)
+Time:  O(n * m)
+Space: O(n * m)
 ```
 
-The user independently produced the correct bottom-up implementation.
+The user independently converted the memoized recurrence into correct tabulation.
+
+### LIS note
+The user derived and shared a correct recursive state/choice approach for Longest Increasing Subsequence, but did not complete the tabulation step before moving to LCS. Treat LIS as **in progress**, not solved, unless the user explicitly returns to it.
 
 ## 4. Solved Problem Index
 
@@ -251,7 +272,8 @@ The user independently produced the correct bottom-up implementation.
 - House Robber II
 - Coin Change
 - Coin Change II — LeetCode 518
-- **Partition Equal Subset Sum — LeetCode 416 — LAST SOLVED**
+- Partition Equal Subset Sum — LeetCode 416
+- **Longest Common Subsequence — LeetCode 1143 — LAST SOLVED**
 
 ## 5. What Another AI Agent Should Know
 
@@ -266,7 +288,7 @@ The user independently produced the correct bottom-up implementation.
 - Trees, backtracking, and monotonic stack are strong; avoid excessive basic practice.
 - Graph problems are temporarily paused while graph concepts are studied.
 - DP should receive increased attention, especially top-down → bottom-up conversion.
-- **Resume from AFTER Partition Equal Subset Sum.**
+- **Resume from AFTER LCS.**
 - Do not repeat previous DP problems unless revision is requested.
 
 ## 6. Current Priority Queue
@@ -276,11 +298,10 @@ Continue testing dependency analysis across different DP structures.
 
 ### Priority 2 — Advanced DP
 Next suitable problems:
-- Longest Increasing Subsequence
-- Min Cost Climbing Stairs
-- Longest Common Subsequence
 - 0/1 Knapsack
 - Edit Distance
+- Min Cost Climbing Stairs
+- Longest Increasing Subsequence — currently in progress
 
 ### Priority 3 — Graph Concepts / Algorithms
 - Graph representations
@@ -316,7 +337,7 @@ Advanced DP                     ░░░░░  Developing
 Advanced Graph                  ░░░░░  Not started
 ```
 
-**Last updated:** 2026-08-18
+**Last updated:** 2026-08-24
 **Current learning focus:** Dynamic Programming — especially Top-Down → Bottom-Up conversion.
-**Last solved problem:** Partition Equal Subset Sum (LeetCode 416).
-**Resume point:** Next DP problem after Partition Equal Subset Sum.
+**Last solved problem:** Longest Common Subsequence (LeetCode 1143).
+**Resume point:** Next DP problem after LCS.
