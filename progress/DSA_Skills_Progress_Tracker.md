@@ -5,25 +5,33 @@
 
 ## CURRENT POSITION — LAST SOLVED PROBLEM
 
-> **LAST SOLVED: Longest Common Subsequence — LeetCode 1143**
+> **LAST SOLVED: Word Break — LeetCode 139**
 >
 > **Status:** Solved successfully in Java using recursion, memoization, and bottom-up tabulation.
 >
-> **Important learning:** The user independently converted the recursive LCS recurrence into bottom-up DP by analyzing dependencies.
+> **Important learning:** The user initially modeled the state as `(idx, prev)` while building a candidate word, then correctly recognized that after selecting a word only the next index matters. The state was reduced to `helper(idx)` / `dp[idx]`.
 >
-> **Top-down state:** `helper(text1, text2, n, m)` = LCS length using prefixes ending at indices `n` and `m`.
+> **Optimized top-down state:** `helper(s, set, idx)` = whether the suffix starting at `idx` can be completely segmented into dictionary words.
 >
-> **Recurrence:**
-> - If characters match: `1 + helper(n-1, m-1)`.
-> - Otherwise: `max(helper(n-1, m), helper(n, m-1))`.
+> **Transition:** Try every substring `s[idx..end]`; if it is in the dictionary, solve the remaining suffix with `helper(end + 1)`. Return true as soon as one valid segmentation succeeds.
 >
-> **Bottom-up dependencies:** `dp[i-1][j-1]`, `dp[i-1][j]`, and `dp[i][j-1]`.
+> **Bottom-up state:** `dp[idx]` = whether the suffix starting at `idx` can be segmented.
 >
-> **Fill direction:** `i: 1 → n`, `j: 1 → m` because every dependency is in an earlier row or earlier column.
+> **Base case:** `dp[n] = true` because an empty remaining suffix is successfully segmented.
 >
-> **Key result:** User correctly derived and implemented the 2D tabulation without being given the solution.
+> **Dependency:** `dp[idx]` depends on `dp[end + 1]`, where `end + 1 > idx`.
 >
-> **Resume rule:** Continue AFTER LCS. Do not repeat LCS unless revision is requested.
+> **Fill direction:** `idx: n-1 → 0` (right to left).
+>
+> **Dictionary lookup:** User correctly converted `wordDict` to a `HashSet` for average O(1) membership lookup instead of linear list search.
+>
+> **Optional optimization discussed:** Track maximum dictionary word length to avoid checking candidate substrings longer than any dictionary word. Trie was discussed as a possible advanced alternative, but is not necessary for the standard solution.
+>
+> **Complexity:** Current straightforward substring implementation is roughly O(n^3) in the worst case due to substring creation/hashing overhead; DP space is O(n), plus recursion stack for top-down.
+>
+> **Key result:** User independently converted the optimized 1D recursive/memoized solution into correct 1D bottom-up tabulation using dependency-direction reasoning.
+>
+> **Resume rule:** Continue AFTER Word Break. Do not repeat it unless revision is requested.
 
 ---
 
@@ -109,7 +117,15 @@ depends on helper(n-1, m-1), helper(n-1, m), helper(n, m-1)
 → fill rows/columns from smaller indices toward larger indices
 ```
 
-The user has now successfully applied dependency-direction reasoning across multiple different 2D DP structures.
+**Word Break**
+```text
+helper(idx)
+depends on helper(end + 1)
+→ dependency is at a larger index
+→ fill idx n-1 → 0
+```
+
+The user has now successfully applied dependency-direction reasoning across multiple different DP structures, including 1D and 2D state spaces.
 
 ## 3. Dynamic Programming Progress
 
@@ -168,7 +184,7 @@ Bottom-up fill: target `0 → sum/2`, idx `n-1 → 0`.
 
 The user independently produced the correct bottom-up implementation.
 
-### Solved: Longest Common Subsequence — 5/5 for this problem
+### Solved: Longest Common Subsequence — 5/5
 **LeetCode:** 1143
 
 Top-down state:
@@ -185,39 +201,82 @@ else:
     max(helper(n-1, m), helper(n, m-1))
 ```
 
-Base case:
-```text
-n < 0 || m < 0 → 0
-```
-
 Bottom-up state:
 ```text
 dp[i][j]
 = LCS length of first i chars of text1 and first j chars of text2
 ```
 
-Transitions:
+Fill direction: `i: 1 → n`, `j: 1 → m`.
+
+Complexity: `O(n*m)` time, `O(n*m)` space.
+
+### Solved: Word Break — 5/5
+**LeetCode:** 139
+
+Initial state explored:
 ```text
-match    → 1 + dp[i-1][j-1]
-mismatch → max(dp[i-1][j], dp[i][j-1])
+helper(s, set, idx, prev)
+```
+where `prev` represented the start of the current candidate word and `idx` represented its end.
+
+Important state-reduction insight:
+```text
+After selecting a valid word, `prev` is irrelevant.
+Only the next index matters.
+```
+
+Final top-down state:
+```text
+helper(s, set, idx)
+= whether suffix s[idx...] can be segmented into dictionary words
+```
+
+Transition:
+```text
+for every end from idx to n-1:
+    if s[idx..end] is in dictionary:
+        try helper(end + 1)
+```
+
+Base case:
+```text
+idx == n → true
+```
+
+Bottom-up:
+```text
+dp[n] = true
+for idx = n-1 down to 0:
+    try every end >= idx
+    if substring is in dictionary and dp[end+1] is true:
+        dp[idx] = true
 ```
 
 Dependency direction:
 ```text
-i: 1 → n
-j: 1 → m
+helper(idx) → helper(end+1)
+end+1 > idx
+→ fill right → left
 ```
 
-Complexity:
+Dictionary optimization:
 ```text
-Time:  O(n * m)
-Space: O(n * m)
+wordDict List → HashSet
 ```
+for average O(1) membership lookup.
 
-The user independently converted the memoized recurrence into correct tabulation.
+Optional optimization discussed: maximum dictionary word length; Trie as an advanced alternative when appropriate.
+
+Complexity of current straightforward substring implementation: roughly `O(n^3)` worst-case due to substring creation/hashing overhead; DP space `O(n)`.
+
+The user independently produced the correct bottom-up implementation.
 
 ### LIS note
 The user derived and shared a correct recursive state/choice approach for Longest Increasing Subsequence, but did not complete the tabulation step before moving to LCS. Treat LIS as **in progress**, not solved, unless the user explicitly returns to it.
+
+### 0/1 Knapsack note
+The user stated that classic 0/1 Knapsack was already solved on August 17, 2026, but the current GitHub repository search did not contain a matching entry. **Do not assume it is unsolved or ask the user to redo it unless they request it.**
 
 ## 4. Solved Problem Index
 
@@ -273,7 +332,10 @@ The user derived and shared a correct recursive state/choice approach for Longes
 - Coin Change
 - Coin Change II — LeetCode 518
 - Partition Equal Subset Sum — LeetCode 416
-- **Longest Common Subsequence — LeetCode 1143 — LAST SOLVED**
+- Longest Common Subsequence — LeetCode 1143
+- **Word Break — LeetCode 139 — LAST SOLVED**
+- Longest Increasing Subsequence — in progress
+- 0/1 Knapsack — previously solved by user; repository entry not found during verification
 
 ## 5. What Another AI Agent Should Know
 
@@ -288,8 +350,9 @@ The user derived and shared a correct recursive state/choice approach for Longes
 - Trees, backtracking, and monotonic stack are strong; avoid excessive basic practice.
 - Graph problems are temporarily paused while graph concepts are studied.
 - DP should receive increased attention, especially top-down → bottom-up conversion.
-- **Resume from AFTER LCS.**
+- **Resume from AFTER Word Break.**
 - Do not repeat previous DP problems unless revision is requested.
+- Remember that 0/1 Knapsack was reported by the user as previously solved, even though it was not found in the current GitHub search.
 
 ## 6. Current Priority Queue
 
@@ -298,10 +361,10 @@ Continue testing dependency analysis across different DP structures.
 
 ### Priority 2 — Advanced DP
 Next suitable problems:
-- 0/1 Knapsack
 - Edit Distance
 - Min Cost Climbing Stairs
 - Longest Increasing Subsequence — currently in progress
+- Other DP patterns not already solved
 
 ### Priority 3 — Graph Concepts / Algorithms
 - Graph representations
@@ -337,7 +400,7 @@ Advanced DP                     ░░░░░  Developing
 Advanced Graph                  ░░░░░  Not started
 ```
 
-**Last updated:** 2026-08-24
+**Last updated:** 2026-08-26
 **Current learning focus:** Dynamic Programming — especially Top-Down → Bottom-Up conversion.
-**Last solved problem:** Longest Common Subsequence (LeetCode 1143).
-**Resume point:** Next DP problem after LCS.
+**Last solved problem:** Word Break (LeetCode 139).
+**Resume point:** Next DP problem after Word Break.
