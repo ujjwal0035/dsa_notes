@@ -5,7 +5,7 @@
 
 ## CURRENT POSITION — LAST SOLVED PROBLEM
 
-> **LAST SOLVED: Word Break — LeetCode 139**
+> **LAST SOLVED: Edit Distance — LeetCode 72**
 >
 > **Status:** Solved successfully in Java using recursion, memoization, and bottom-up tabulation.
 >
@@ -31,7 +31,7 @@
 >
 > **Key result:** User independently converted the optimized 1D recursive/memoized solution into correct 1D bottom-up tabulation using dependency-direction reasoning.
 >
-> **Resume rule:** Continue AFTER Word Break. Do not repeat it unless revision is requested.
+> **Resume rule:** Continue AFTER Edit Distance. Do not repeat it unless revision is requested.
 
 ---
 
@@ -272,6 +272,26 @@ Complexity of current straightforward substring implementation: roughly `O(n^3)`
 
 The user independently produced the correct bottom-up implementation.
 
+
+### Solved: Edit Distance — 5/5
+**LeetCode:** 72
+
+State: `helper(word1, word2, i, j)` = minimum operations to convert `word1[i...]` into `word2[j...]`.
+
+Base cases: if `i == word1.length()` return `word2.length() - j`; if `j == word2.length()` return `word1.length() - i`.
+
+If characters match: `helper(i+1, j+1)` with no operation cost.
+
+If different: `replace = 1 + helper(i+1,j+1)`, `delete = 1 + helper(i+1,j)`, `insert = 1 + helper(i,j+1)`; take the minimum.
+
+Important insertion insight: insertion advances `j` because it satisfies the current target character, but does not advance `i` because the current original character is still unconsumed.
+
+Memoization uses `dp[i][j]`: O(n*m) time and O(n*m) DP space, plus recursion stack.
+
+Bottom-up conversion: initialize `dp[n][j] = m-j` and `dp[i][m] = n-i`; because the recurrence depends on larger indices `(i+1,j+1)`, `(i+1,j)`, and `(i,j+1)`, fill both indices right-to-left (`i=n-1→0`, `j=m-1→0`). User independently produced the correct tabulation.
+
+**Key learning:** User successfully derived loop direction from recursive dependencies rather than memorizing it.
+
 ### LIS note
 The user derived and shared a correct recursive state/choice approach for Longest Increasing Subsequence, but did not complete the tabulation step before moving to LCS. Treat LIS as **in progress**, not solved, unless the user explicitly returns to it.
 
@@ -333,7 +353,8 @@ The user stated that classic 0/1 Knapsack was already solved on August 17, 2026,
 - Coin Change II — LeetCode 518
 - Partition Equal Subset Sum — LeetCode 416
 - Longest Common Subsequence — LeetCode 1143
-- **Word Break — LeetCode 139 — LAST SOLVED**
+- Word Break — LeetCode 139
+- **Edit Distance — LeetCode 72 — LAST SOLVED**
 - Longest Increasing Subsequence — in progress
 - 0/1 Knapsack — previously solved by user; repository entry not found during verification
 
@@ -361,7 +382,6 @@ Continue testing dependency analysis across different DP structures.
 
 ### Priority 2 — Advanced DP
 Next suitable problems:
-- Edit Distance
 - Min Cost Climbing Stairs
 - Longest Increasing Subsequence — currently in progress
 - Other DP patterns not already solved
@@ -400,7 +420,7 @@ Advanced DP                     ░░░░░  Developing
 Advanced Graph                  ░░░░░  Not started
 ```
 
-**Last updated:** 2026-08-26
+**Last updated:** 2026-09-03
 **Current learning focus:** Dynamic Programming — especially Top-Down → Bottom-Up conversion.
-**Last solved problem:** Word Break (LeetCode 139).
-**Resume point:** Next DP problem after Word Break.
+**Last solved problem:** Edit Distance (LeetCode 72).
+**Resume point:** Next DP problem after Edit Distance.
