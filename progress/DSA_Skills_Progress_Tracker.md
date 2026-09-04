@@ -5,7 +5,7 @@
 
 ## CURRENT POSITION — LAST SOLVED PROBLEM
 
-> **LAST SOLVED: Edit Distance — LeetCode 72**
+> **LAST SOLVED: Target Sum — LeetCode 494**
 >
 > **Status:** Solved successfully in Java using recursion, memoization, and bottom-up tabulation.
 >
@@ -31,7 +31,7 @@
 >
 > **Key result:** User independently converted the optimized 1D recursive/memoized solution into correct 1D bottom-up tabulation using dependency-direction reasoning.
 >
-> **Resume rule:** Continue AFTER Edit Distance. Do not repeat it unless revision is requested.
+> **Resume rule:** Continue AFTER Target Sum. Do not repeat it unless revision is requested.
 
 ---
 
@@ -273,6 +273,24 @@ Complexity of current straightforward substring implementation: roughly `O(n^3)`
 The user independently produced the correct bottom-up implementation.
 
 
+
+### Solved: Target Sum — 5/5
+**LeetCode:** 494
+
+State: `helper(nums, idx, target)` where `target` represents the remaining sum needed using `nums[0...idx]`.
+
+Choices at each element:
+- Choose `+nums[idx]` → remaining target becomes `target - nums[idx]`.
+- Choose `-nums[idx]` → remaining target becomes `target + nums[idx]`.
+
+Base case: when all elements are processed, return `1` if remaining target is `0`, otherwise `0`.
+
+Memoization: used `dp[idx][OFFSET + target]` because the target state can be negative. The offset shifts the state into a valid array index.
+
+Bottom-up conversion: `dp[n][OFFSET] = 1` represents one way to achieve remaining target `0` after processing all numbers. For state `j = OFFSET + target`, transitions become `dp[i+1][j-nums[i]] + dp[i+1][j+nums[i]]`. Since recursion depends on `idx+1`, fill rows from `n-1` down to `0`. Boundary checks protect the shifted indexes.
+
+**Key learning:** User independently converted the offset-based memoized state into bottom-up tabulation and correctly derived the transformed indexes `j-nums[i]` and `j+nums[i]`.
+
 ### Solved: Edit Distance — 5/5
 **LeetCode:** 72
 
@@ -354,7 +372,8 @@ The user stated that classic 0/1 Knapsack was already solved on August 17, 2026,
 - Partition Equal Subset Sum — LeetCode 416
 - Longest Common Subsequence — LeetCode 1143
 - Word Break — LeetCode 139
-- **Edit Distance — LeetCode 72 — LAST SOLVED**
+- Edit Distance — LeetCode 72
+- **Target Sum — LeetCode 494 — LAST SOLVED**
 - Longest Increasing Subsequence — in progress
 - 0/1 Knapsack — previously solved by user; repository entry not found during verification
 
@@ -422,5 +441,5 @@ Advanced Graph                  ░░░░░  Not started
 
 **Last updated:** 2026-09-03
 **Current learning focus:** Dynamic Programming — especially Top-Down → Bottom-Up conversion.
-**Last solved problem:** Edit Distance (LeetCode 72).
-**Resume point:** Next DP problem after Edit Distance.
+**Last solved problem:** Target Sum (LeetCode 494).
+**Resume point:** Next DP problem after Target Sum.
