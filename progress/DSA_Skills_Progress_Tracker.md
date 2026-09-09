@@ -5,7 +5,7 @@
 
 ## CURRENT POSITION — LAST SOLVED PROBLEM
 
-> **LAST SOLVED: Target Sum — LeetCode 494**
+> **LAST SOLVED: Unique Paths — LeetCode 62**
 >
 > **Status:** Solved successfully in Java using recursion, memoization, and bottom-up tabulation.
 >
@@ -31,7 +31,7 @@
 >
 > **Key result:** User independently converted the optimized 1D recursive/memoized solution into correct 1D bottom-up tabulation using dependency-direction reasoning.
 >
-> **Resume rule:** Continue AFTER Target Sum. Do not repeat it unless revision is requested.
+> **Resume rule:** Continue AFTER Unique Paths. Next: one random revision problem, then continue with new DP.
 
 ---
 
@@ -274,6 +274,26 @@ The user independently produced the correct bottom-up implementation.
 
 
 
+
+### Solved: Unique Paths — 5/5
+**LeetCode:** 62
+
+Solved directly using bottom-up tabulation (without first deriving recursion).
+
+State: `dp[i][j]` = number of unique paths from cell `(i,j)` to the bottom-right destination.
+
+Base cases:
+- Last row = `1` for every cell because only moving right remains.
+- Last column = `1` for every cell because only moving down remains.
+
+Transition: `dp[i][j] = dp[i+1][j] + dp[i][j+1]`.
+
+Fill direction: bottom-to-top and right-to-left because each state depends on the cell below and the cell to the right.
+
+Complexity: O(m*n) time and O(m*n) space.
+
+**Key learning:** User independently derived bottom-up DP directly from the problem and correctly identified dependency direction.
+
 ### Solved: Target Sum — 5/5
 **LeetCode:** 494
 
@@ -373,7 +393,8 @@ The user stated that classic 0/1 Knapsack was already solved on August 17, 2026,
 - Longest Common Subsequence — LeetCode 1143
 - Word Break — LeetCode 139
 - Edit Distance — LeetCode 72
-- **Target Sum — LeetCode 494 — LAST SOLVED**
+- Target Sum — LeetCode 494
+- **Unique Paths — LeetCode 62 — LAST SOLVED**
 - Longest Increasing Subsequence — in progress
 - 0/1 Knapsack — previously solved by user; repository entry not found during verification
 
@@ -441,5 +462,5 @@ Advanced Graph                  ░░░░░  Not started
 
 **Last updated:** 2026-09-03
 **Current learning focus:** Dynamic Programming — especially Top-Down → Bottom-Up conversion.
-**Last solved problem:** Target Sum (LeetCode 494).
-**Resume point:** Next DP problem after Target Sum.
+**Last solved problem:** Unique Paths (LeetCode 62).
+**Resume point:** Random revision problem next, then continue with new DP.
