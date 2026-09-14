@@ -5,33 +5,31 @@
 
 ## CURRENT POSITION — LAST SOLVED PROBLEM
 
-> **LAST SOLVED: Unique Paths — LeetCode 62**
+> **LAST SOLVED: Paint House — LeetCode 256**
 >
-> **Status:** Solved successfully in Java using recursion, memoization, and bottom-up tabulation.
+> **Status:** Solved successfully in Java using recursive state modeling, memoization, and bottom-up tabulation. User also identified the possibility of reducing the 2D DP to constant-space 1D DP, but the first in-place implementation had a dependency-overwrite bug; the correct `newDp` approach was explained but not yet independently re-coded.
 >
-> **Important learning:** The user initially modeled the state as `(idx, prev)` while building a candidate word, then correctly recognized that after selecting a word only the next index matters. The state was reduced to `helper(idx)` / `dp[idx]`.
+> **State:** `helper(idx, prevColor)` = minimum cost to paint houses from `idx` onward when the previous house used `prevColor`.
 >
-> **Optimized top-down state:** `helper(s, set, idx)` = whether the suffix starting at `idx` can be completely segmented into dictionary words.
+> **Color states:** `0 = Red`, `1 = Blue`, `2 = Green`, `3 = no previous color`.
 >
-> **Transition:** Try every substring `s[idx..end]`; if it is in the dictionary, solve the remaining suffix with `helper(end + 1)`. Return true as soon as one valid segmentation succeeds.
+> **Transition:** Choose any color different from `prevColor`, add the current house's painting cost, and recurse to `idx + 1` with the chosen color. For the initial state (`prevColor = 3`), all three colors are available.
 >
-> **Bottom-up state:** `dp[idx]` = whether the suffix starting at `idx` can be segmented.
+> **Base case:** `idx == n → 0` because no houses remain to paint.
 >
-> **Base case:** `dp[n] = true` because an empty remaining suffix is successfully segmented.
+> **Memoization:** `dp[idx][prevColor]` caches the minimum remaining cost for each state.
 >
-> **Dependency:** `dp[idx]` depends on `dp[end + 1]`, where `end + 1 > idx`.
+> **Bottom-up dependency:** `dp[i][prevColor]` depends only on `dp[i+1][newColor]`, so fill houses from `n-1 → 0`.
 >
-> **Fill direction:** `idx: n-1 → 0` (right to left).
+> **2D tabulation:** User independently converted the recursive solution into correct bottom-up tabulation with four previous-color states and returned `dp[0][3]`.
 >
-> **Dictionary lookup:** User correctly converted `wordDict` to a `HashSet` for average O(1) membership lookup instead of linear list search.
+> **Space optimization insight:** Because each row depends only on the next row, the table can be reduced from `O(n)` DP space to `O(1)` using two 1D arrays (`dp` and `newDp`). Directly overwriting one array is incorrect because later states would read already-updated values from the current row.
 >
-> **Optional optimization discussed:** Track maximum dictionary word length to avoid checking candidate substrings longer than any dictionary word. Trie was discussed as a possible advanced alternative, but is not necessary for the standard solution.
+> **Complexity:** 2D DP: O(n) time and O(n) space. Space-optimized version: O(n) time and O(1) auxiliary DP space.
 >
-> **Complexity:** Current straightforward substring implementation is roughly O(n^3) in the worst case due to substring creation/hashing overhead; DP space is O(n), plus recursion stack for top-down.
+> **Key learning:** User successfully recognized a state containing a previous decision, derived the bottom-up direction from the dependency on `idx+1`, and recognized the rolling-array space-optimization pattern.
 >
-> **Key result:** User independently converted the optimized 1D recursive/memoized solution into correct 1D bottom-up tabulation using dependency-direction reasoning.
->
-> **Resume rule:** Continue AFTER Unique Paths. Next: one random revision problem, then continue with new DP.
+> **Resume rule:** Continue AFTER Paint House. New DP problem next.
 
 ---
 
@@ -125,6 +123,14 @@ depends on helper(end + 1)
 → fill idx n-1 → 0
 ```
 
+**Paint House**
+```text
+helper(idx, prevColor)
+depends on helper(idx + 1, chosenColor)
+→ dependency is at a larger index
+→ fill idx n-1 → 0
+```
+
 The user has now successfully applied dependency-direction reasoning across multiple different DP structures, including 1D and 2D state spaces.
 
 ## 3. Dynamic Programming Progress
@@ -214,81 +220,34 @@ Complexity: `O(n*m)` time, `O(n*m)` space.
 ### Solved: Word Break — 5/5
 **LeetCode:** 139
 
-Initial state explored:
-```text
-helper(s, set, idx, prev)
-```
-where `prev` represented the start of the current candidate word and `idx` represented its end.
-
-Important state-reduction insight:
-```text
-After selecting a valid word, `prev` is irrelevant.
-Only the next index matters.
-```
-
 Final top-down state:
 ```text
 helper(s, set, idx)
 = whether suffix s[idx...] can be segmented into dictionary words
 ```
 
-Transition:
-```text
-for every end from idx to n-1:
-    if s[idx..end] is in dictionary:
-        try helper(end + 1)
-```
+Transition: try every substring starting at `idx`; if it is in the dictionary, recurse on `end + 1`.
 
-Base case:
-```text
-idx == n → true
-```
+Base case: `idx == n → true`.
 
-Bottom-up:
-```text
-dp[n] = true
-for idx = n-1 down to 0:
-    try every end >= idx
-    if substring is in dictionary and dp[end+1] is true:
-        dp[idx] = true
-```
+Bottom-up: `dp[n] = true`; fill `idx = n-1 → 0` and use `dp[end+1]`.
 
-Dependency direction:
-```text
-helper(idx) → helper(end+1)
-end+1 > idx
-→ fill right → left
-```
+Dictionary was converted to `HashSet` for average O(1) membership lookup. Maximum-word-length and Trie optimizations were discussed.
 
-Dictionary optimization:
-```text
-wordDict List → HashSet
-```
-for average O(1) membership lookup.
-
-Optional optimization discussed: maximum dictionary word length; Trie as an advanced alternative when appropriate.
-
-Complexity of current straightforward substring implementation: roughly `O(n^3)` worst-case due to substring creation/hashing overhead; DP space `O(n)`.
+Complexity of straightforward substring implementation: roughly O(n^3) worst-case due to substring creation/hashing overhead; DP space O(n).
 
 The user independently produced the correct bottom-up implementation.
-
-
-
 
 ### Solved: Unique Paths — 5/5
 **LeetCode:** 62
 
-Solved directly using bottom-up tabulation (without first deriving recursion).
-
 State: `dp[i][j]` = number of unique paths from cell `(i,j)` to the bottom-right destination.
 
-Base cases:
-- Last row = `1` for every cell because only moving right remains.
-- Last column = `1` for every cell because only moving down remains.
+Base cases: last row and last column are `1`.
 
 Transition: `dp[i][j] = dp[i+1][j] + dp[i][j+1]`.
 
-Fill direction: bottom-to-top and right-to-left because each state depends on the cell below and the cell to the right.
+Fill direction: bottom-to-top and right-to-left.
 
 Complexity: O(m*n) time and O(m*n) space.
 
@@ -297,41 +256,74 @@ Complexity: O(m*n) time and O(m*n) space.
 ### Solved: Target Sum — 5/5
 **LeetCode:** 494
 
-State: `helper(nums, idx, target)` where `target` represents the remaining sum needed using `nums[0...idx]`.
+State: `helper(nums, idx, target)` where `target` is the remaining sum needed using `nums[0...idx]`.
 
-Choices at each element:
-- Choose `+nums[idx]` → remaining target becomes `target - nums[idx]`.
-- Choose `-nums[idx]` → remaining target becomes `target + nums[idx]`.
+Choices: `+nums[idx]` makes the remaining target `target - nums[idx]`; `-nums[idx]` makes it `target + nums[idx]`.
 
-Base case: when all elements are processed, return `1` if remaining target is `0`, otherwise `0`.
+Memoization used an offset because target can be negative. Bottom-up used shifted state `j = OFFSET + target`, with transitions `j-nums[i]` and `j+nums[i]`, and filled rows from `n-1` down to `0`.
 
-Memoization: used `dp[idx][OFFSET + target]` because the target state can be negative. The offset shifts the state into a valid array index.
-
-Bottom-up conversion: `dp[n][OFFSET] = 1` represents one way to achieve remaining target `0` after processing all numbers. For state `j = OFFSET + target`, transitions become `dp[i+1][j-nums[i]] + dp[i+1][j+nums[i]]`. Since recursion depends on `idx+1`, fill rows from `n-1` down to `0`. Boundary checks protect the shifted indexes.
-
-**Key learning:** User independently converted the offset-based memoized state into bottom-up tabulation and correctly derived the transformed indexes `j-nums[i]` and `j+nums[i]`.
+**Key learning:** User independently converted the offset-based memoized state into correct bottom-up tabulation.
 
 ### Solved: Edit Distance — 5/5
 **LeetCode:** 72
 
 State: `helper(word1, word2, i, j)` = minimum operations to convert `word1[i...]` into `word2[j...]`.
 
-Base cases: if `i == word1.length()` return `word2.length() - j`; if `j == word2.length()` return `word1.length() - i`.
+Base cases handle remaining insertions/deletions. Matching characters advance both indices with no cost. Otherwise choose minimum of replace, delete, and insert.
 
-If characters match: `helper(i+1, j+1)` with no operation cost.
+Important insertion insight: insertion advances `j` but does not advance `i`.
 
-If different: `replace = 1 + helper(i+1,j+1)`, `delete = 1 + helper(i+1,j)`, `insert = 1 + helper(i,j+1)`; take the minimum.
+Bottom-up fills `i=n-1→0`, `j=m-1→0` because dependencies use larger indices.
 
-Important insertion insight: insertion advances `j` because it satisfies the current target character, but does not advance `i` because the current original character is still unconsumed.
+**Key learning:** User successfully derived loop direction from recursive dependencies.
 
-Memoization uses `dp[i][j]`: O(n*m) time and O(n*m) DP space, plus recursion stack.
+### Solved: Paint House — 5/5
+**LeetCode:** 256
 
-Bottom-up conversion: initialize `dp[n][j] = m-j` and `dp[i][m] = n-i`; because the recurrence depends on larger indices `(i+1,j+1)`, `(i+1,j)`, and `(i,j+1)`, fill both indices right-to-left (`i=n-1→0`, `j=m-1→0`). User independently produced the correct tabulation.
+State:
+```text
+helper(idx, prevColor)
+= minimum cost to paint houses from idx onward
+  when the previous house used prevColor
+```
 
-**Key learning:** User successfully derived loop direction from recursive dependencies rather than memorizing it.
+States:
+```text
+0 → Red
+1 → Blue
+2 → Green
+3 → no previous color
+```
+
+Transition: choose a color different from `prevColor`, add `cost[idx][chosenColor]`, and recurse to `idx+1`.
+
+Base case: `idx == n → 0`.
+
+Memoized state: `dp[idx][prevColor]`.
+
+Bottom-up: because each state depends on `idx+1`, fill `idx = n-1 → 0`. The initial answer is `dp[0][3]`.
+
+User independently produced the correct 2D tabulation.
+
+**Space optimization:** Only the next row is required, so the 2D table can be reduced to constant space with `dp` + `newDp`. User attempted in-place 1D updates and correctly understood the intended optimization, but the implementation overwrote dependencies before all current-row states were computed. The `newDp` rolling-array pattern was explained.
+
+Complexity: O(n) time; O(n) space for 2D DP, O(1) auxiliary DP space after rolling-array optimization.
+
+### Solved: Longest Consecutive Sequence — 5/5 (Blind Revision #1)
+**LeetCode:** 128
+
+User first produced the sorting solution: O(n log n).
+
+Then independently derived the optimal HashSet solution: insert all numbers into a set, start a sequence only when `num - 1` is absent, then expand forward while consecutive values exist.
+
+Optimal standard complexity: average O(n) time and O(n) space.
+
+**Key pattern:** HashSet existence lookup + sequence-start detection + forward expansion.
+
+This was the first successful blind random revision in the current revision cadence.
 
 ### LIS note
-The user derived and shared a correct recursive state/choice approach for Longest Increasing Subsequence, but did not complete the tabulation step before moving to LCS. Treat LIS as **in progress**, not solved, unless the user explicitly returns to it.
+The user derived and shared a correct recursive state/choice approach for Longest Increasing Subsequence, but did not complete the tabulation step. Treat LIS as **in progress**, not solved, unless the user explicitly returns to it.
 
 ### 0/1 Knapsack note
 The user stated that classic 0/1 Knapsack was already solved on August 17, 2026, but the current GitHub repository search did not contain a matching entry. **Do not assume it is unsolved or ask the user to redo it unless they request it.**
@@ -345,6 +337,7 @@ The user stated that classic 0/1 Knapsack was already solved on August 17, 2026,
 - Product of Array Except Self
 - Binary Search
 - Capacity to Ship Packages Within D Days
+- Longest Consecutive Sequence — LeetCode 128 (Blind Revision #1)
 
 ### Monotonic Stack
 - Largest Rectangle in Histogram
@@ -394,7 +387,8 @@ The user stated that classic 0/1 Knapsack was already solved on August 17, 2026,
 - Word Break — LeetCode 139
 - Edit Distance — LeetCode 72
 - Target Sum — LeetCode 494
-- **Unique Paths — LeetCode 62 — LAST SOLVED**
+- Unique Paths — LeetCode 62
+- Paint House — LeetCode 256
 - Longest Increasing Subsequence — in progress
 - 0/1 Knapsack — previously solved by user; repository entry not found during verification
 
@@ -410,9 +404,10 @@ The user stated that classic 0/1 Knapsack was already solved on August 17, 2026,
 ### Current strategy
 - Trees, backtracking, and monotonic stack are strong; avoid excessive basic practice.
 - Graph problems are temporarily paused while graph concepts are studied.
-- DP should receive increased attention, especially top-down → bottom-up conversion.
-- **Resume from AFTER Word Break.**
+- DP should receive increased attention, especially top-down → bottom-up conversion and space optimization.
+- **Resume from AFTER Paint House.**
 - Do not repeat previous DP problems unless revision is requested.
+- Current cadence: after two new DP problems, give one blind random revision problem. The latest blind revision was Longest Consecutive Sequence, followed by Paint House as the next new DP problem.
 - Remember that 0/1 Knapsack was reported by the user as previously solved, even though it was not found in the current GitHub search.
 
 ## 6. Current Priority Queue
@@ -420,13 +415,18 @@ The user stated that classic 0/1 Knapsack was already solved on August 17, 2026,
 ### Priority 1 — DP Tabulation
 Continue testing dependency analysis across different DP structures.
 
-### Priority 2 — Advanced DP
+### Priority 2 — DP Space Optimization
+Continue practicing rolling-array / constant-space conversions, especially where current states depend only on the immediately previous/next row.
+
+### Priority 3 — Advanced DP
 Next suitable problems:
 - Min Cost Climbing Stairs
 - Longest Increasing Subsequence — currently in progress
+- Stock DP
+- Palindrome / interval DP
 - Other DP patterns not already solved
 
-### Priority 3 — Graph Concepts / Algorithms
+### Priority 4 — Graph Concepts / Algorithms
 - Graph representations
 - Cycle detection
 - Topological Sort
@@ -437,30 +437,3 @@ Next suitable problems:
 - Trees
 - Monotonic Stack
 - Backtracking
-- Binary Search
-- Greedy
-- Sliding Window / Prefix Sum / Kadane
-
-## 7. Overall Interview Readiness Snapshot
-
-```text
-Recursion / Tree Thinking       █████  5/5
-Monotonic Stack                 █████  5/5
-Backtracking                    █████  5/5
-BST                             █████  5/5
-Tree DP                         █████  5/5
-Arrays / Core Patterns          ████░  4/5
-Greedy                          ████░  4/5
-Graph Fundamentals              ████░  4/5
-DP Recursion                    █████  5/5
-DP Memoization                  ████░  4/5
-DP Tabulation                   ███░░  3/5  ← PRIMARY FOCUS
-DP Space Optimization           ███░░  3/5
-Advanced DP                     ░░░░░  Developing
-Advanced Graph                  ░░░░░  Not started
-```
-
-**Last updated:** 2026-09-03
-**Current learning focus:** Dynamic Programming — especially Top-Down → Bottom-Up conversion.
-**Last solved problem:** Unique Paths (LeetCode 62).
-**Resume point:** Random revision problem next, then continue with new DP.
