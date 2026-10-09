@@ -122,6 +122,13 @@ This counts as blind revision #2, not a new problem.
 
 ---
 
+### Blind Revision #3: Maximum Product Subarray — LeetCode 152
+**Pattern:** Track maximum and minimum product ending at each index.
+
+User independently implemented the correct O(n) one-pass solution. At each element, they preserve the previous minimum and maximum products, then compute the new minimum and maximum from the current element and its products with both previous states. This correctly handles negative values and zero.
+
+**Complexity:** O(n) time, O(1) space.
+
 ## 4. Dynamic Programming Progress
 
 ### Solved: Climbing Stairs — 5/5
@@ -168,6 +175,17 @@ Suffix-state DP with insert/delete/replace; bottom-up from larger indices downwa
 **LeetCode:** 256
 State `helper(idx, prevColor)`; 2D tabulation completed. Rolling-array optimization was understood, though the first in-place implementation overwrote dependencies.
 
+### Solved: Min Cost Climbing Stairs — 5/5
+**LeetCode:** 746
+
+State: `dp[i]` = minimum cost to reach the top when starting from stair `i`.
+
+Transition: `dp[i] = cost[i] + min(dp[i+1], dp[i+2])`; return `min(dp[0], dp[1])` because starting at stair 0 or stair 1 is allowed.
+
+User independently derived right-to-left tabulation and optimized it to O(1) space using two rolling variables.
+
+**Complexity:** O(n) time, O(1) auxiliary space after optimization.
+
 ### Solved: Longest Increasing Subsequence — 5/5
 **LeetCode:** 300
 Completed recursive state modeling, memoization, 2D tabulation, and 1D O(n²) DP.
@@ -192,6 +210,7 @@ User reported classic 0/1 Knapsack was solved previously; repository entry was n
 - Prefix Sum problems
 - Kadane / Maximum Subarray
 - Product of Array Except Self — LeetCode 238
+- Maximum Product Subarray — LeetCode 152 (Blind Revision #3)
 - Binary Search
 - Capacity to Ship Packages Within D Days
 - Longest Consecutive Sequence — LeetCode 128 (Blind Revision #1)
@@ -258,20 +277,20 @@ User reported classic 0/1 Knapsack was solved previously; repository entry was n
 
 **2 new DP problems → 1 blind revision → repeat.**
 
-Latest blind revision: Longest Substring Without Repeating Characters (LC 3).
+Latest blind revision: Maximum Product Subarray (LC 152), completed correctly.
 
-Latest new DP: Longest Increasing Subsequence (LC 300), now completed.
+Latest new DP: Min Cost Climbing Stairs (LC 746), completed with O(1) space optimization.
 
 **Next session:** choose a NEW DP problem that is not already in the solved list. Prefer a problem that reinforces tabulation and/or space optimization rather than repeating Coin Change.
 
 ### Suggested next NEW DP
-**Min Cost Climbing Stairs — LeetCode 746**
+**Minimum Falling Path Sum — LeetCode 931**
 
 Reason:
-- short enough to focus on recurrence
-- different state interpretation from Coin Change/LIS
-- good opportunity to practice top-down → bottom-up → O(1) space
-- does not duplicate an already completed problem
+- practices 2D DP state definition and dependency ordering
+- reinforces bottom-up tabulation
+- offers an opportunity to practice rolling-row space optimization
+- do not count the previously suggested House Robber (LC 198), since it is already solved
 
 After two new DP problems, do another blind revision without revealing the pattern beforehand.
 
