@@ -5,7 +5,7 @@
 
 ## CURRENT POSITION — LAST SOLVED PROBLEM
 
-> **LAST SOLVED: Longest Increasing Subsequence — LeetCode 300**
+> **LATEST PRACTICE: Maximum Product Subarray — LeetCode 152 (blind revision); latest new DP: Min Cost Climbing Stairs — LeetCode 746**
 >
 > **Status:** Solved successfully in Java through recursive state modeling, 2D memoization, 2D bottom-up tabulation, and 1D O(n²) DP.
 >
