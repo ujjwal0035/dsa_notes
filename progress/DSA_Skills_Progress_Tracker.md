@@ -5,21 +5,23 @@
 
 ## CURRENT POSITION — LAST SOLVED PROBLEM
 
-> **LATEST PRACTICE: Maximum Product Subarray — LeetCode 152 (blind revision); latest new DP: Min Cost Climbing Stairs — LeetCode 746**
+> **LATEST NEW DP: Minimum Path Sum — LeetCode 64**
 >
-> **Status:** Solved successfully in Java through recursive state modeling, 2D memoization, 2D bottom-up tabulation, and 1D O(n²) DP.
+> **Status:** User independently implemented correct 2D bottom-up tabulation, then correctly optimized it to a single 1D array.
 >
-> **Top-down state:** `helper(idx, prevInd)` = maximum LIS length from `idx) onward when `prevInd` is the previously selected index. `prevInd = -1` means no previous element has been selected.
+> **2D state:** `dp[i][j]` = minimum path sum from cell (i, j) to the bottom-right cell, moving only right or down.
 >
-> **2D tabulation:** User correctly mapped the sentinel state `prevInd = -1` to column `0` using `prevInd + 1`, and derived the transition `take = 1 + dp[idx + 1][idx + 1]`, `skip = dp[idx + 1][prevInd + 1]`.
+> **Transition:** `grid[i][j] + min(dp[i+1][j], dp[i][j+1])`, with the last row and last column initialized separately.
 >
-> **1D optimization:** User then derived a different equivalent state: `dp[i]) = length of the longest increasing subsequence ending exactly at index `i`. Transition: for every `j < i), if `nums[j] < nums[i]`, then `dp[i] = max(dp[i], dp[j] + 1)`. Final answer is `max(dp)`.
+> **1D optimization:** Initialize `dp[]` from the bottom row. Process rows bottom-to-top; update the last column using the cell below, then process columns right-to-left using `dp[j] = grid[i][j] + min(dp[j], dp[j+1])`. Before update, `dp[j]` is the value from below; `dp[j+1]` is the already-updated value from the right.
 >
-> **Complexity:** O(n²) time and O(n) space.
+> **Complexity:** O(n × m) time, O(m) extra space.
 >
-> **Key learning:** User successfully converted recursion → memoization → tabulation → changed-state 1D DP, which directly targets the current DP tabulation/space-optimization weakness.
+> **Other recent new DP:** Minimum Falling Path Sum — LeetCode 931, solved using memoization, 2D tabulation, and rolling-row O(n) space optimization; Min Cost Climbing Stairs — LeetCode 746, solved with O(1) space.
 >
-> **Resume rule:** Continue after LIS. Do not repeat Coin Change, Coin Change II, Partition Equal Subset Sum, LCS, Word Break, Edit Distance, Target Sum, Unique Paths, Paint House, or LIS unless revision is explicitly requested.
+> **Cadence:** 2 new DP problems → 1 blind revision. Two new DP problems (LC 931 and LC 64) are complete, so the next task is a blind revision: LeetCode 739 — Daily Temperatures. Do not reveal the pattern or hints before the user attempts it.
+
+---
 
 ---
 
@@ -186,6 +188,25 @@ User independently derived right-to-left tabulation and optimized it to O(1) spa
 
 **Complexity:** O(n) time, O(1) auxiliary space after optimization.
 
+### Solved: Minimum Falling Path Sum — 5/5
+**LeetCode:** 931
+
+State: minimum falling path sum starting at cell `(i, j)`; each move may go down-left, down, or down-right. Out-of-bounds moves are excluded.
+
+User completed memoization, 2D bottom-up tabulation, and rolling-row optimization using `next[]` and `cur[]`.
+
+**Complexity:** O(n²) time, O(n) space after optimization.
+
+### Solved: Minimum Path Sum — 5/5
+**LeetCode:** 64
+
+State: `dp[i][j]` = minimum cost from cell `(i, j)` to the bottom-right, moving only right or down.
+
+User independently derived correct 2D tabulation and then a 1D in-place DP array. The 1D solution initializes the bottom row, updates the last column while moving upward, and then updates each row right-to-left:
+`dp[j] = grid[i][j] + min(dp[j], dp[j+1])`.
+
+**Complexity:** O(n × m) time, O(m) space.
+
 ### Solved: Longest Increasing Subsequence — 5/5
 **LeetCode:** 300
 Completed recursive state modeling, memoization, 2D tabulation, and 1D O(n²) DP.
@@ -279,20 +300,11 @@ User reported classic 0/1 Knapsack was solved previously; repository entry was n
 
 Latest blind revision: Maximum Product Subarray (LC 152), completed correctly.
 
-Latest new DP: Min Cost Climbing Stairs (LC 746), completed with O(1) space optimization.
+Latest two new DP problems: Minimum Falling Path Sum (LC 931) and Minimum Path Sum (LC 64), both completed with space optimization.
 
-**Next session:** choose a NEW DP problem that is not already in the solved list. Prefer a problem that reinforces tabulation and/or space optimization rather than repeating Coin Change.
+**Next session:** blind revision — LeetCode 739, Daily Temperatures. The problem appears in the prior solved index, so treat this as a revision attempt rather than a new problem. Do not reveal its pattern or provide hints before the user attempts it.
 
-### Suggested next NEW DP
-**Minimum Falling Path Sum — LeetCode 931**
-
-Reason:
-- practices 2D DP state definition and dependency ordering
-- reinforces bottom-up tabulation
-- offers an opportunity to practice rolling-row space optimization
-- do not count the previously suggested House Robber (LC 198), since it is already solved
-
-After two new DP problems, do another blind revision without revealing the pattern beforehand.
+After this revision, continue the cadence with two new DP problems, then another blind revision.
 
 ---
 
@@ -311,5 +323,5 @@ After two new DP problems, do another blind revision without revealing the patte
 - Graph problems are temporarily paused while graph concepts are studied.
 - DP receives increased attention, especially top-down → bottom-up conversion and space optimization.
 - Do not repeat previously solved DP problems unless revision is requested.
-- Maintain the cadence: 2 new DP → 1 blind revision.
+- Maintain the cadence: 2 new DP → 1 blind revision. After LC 931 and LC 64, next blind revision is LC 739 Daily Temperatures.
 - 0/1 Knapsack was reported by the user as previously solved, even though it was not found in the repository.
